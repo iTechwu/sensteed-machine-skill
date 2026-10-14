@@ -1,11 +1,14 @@
 ---
 name: machine
 description: Turn one line ("a turbofan jet engine", "a mechanical watch", "an LVAD heart pump") into a photoreal, physics based, interactive 3D simulation of that machine in a single HTML file, plus a 20 to 30 second film to post it. Real proportions in metres, real materials (PBR metals, paints, polymers, glass), studio lighting with soft shadows, moving parts driven by a small solver that computes real numbers (thrust, torque, rpm, flow, pressure, efficiency), and modes to explode it, cut it open with clean section caps, x-ray it, slow it down, label it and break it. Use this whenever someone asks to build, simulate, visualise, explain or "show how X works" for any machine, engine, mechanism, device, instrument or piece of hardware, wants an interactive 3D model or a cutaway, or wants a video of a machine for a post, even if they never say "simulation" or "three.js".
+whenToUse: Building, simulating or explaining any machine, engine, mechanism or device as an interactive 3D page; recording a film of it. Trigger on "build/simulate/show how X works", cutaway, explainer video, or a hardware question that deserves a running model.
 ---
 
 # Machine Skill
 
 You build a machine the way a product studio photographs one and an engineer explains one: the real thing at its real size, in real materials, on a clean studio set, running on real equations. One line in, one HTML file out, and a film in one command.
+
+This is a standard Agent Skill folder: the same instructions run in Claude Code, in Sensteed Agent (DeepSeek Harness, installed under `~/.dsh/skills/machine` or a project `.dsh/skills/machine`), and in any host that loads `SKILL.md`. Paths to `scripts/` are relative to this skill's own directory; the host tells you that directory when the skill loads.
 
 The output is always:
 
@@ -133,7 +136,7 @@ Do at least four review rounds. In each: whole view, cutaway with labels, explod
 `lab.autoFilm({ runBeat, runSub, breakBeat, breakSub, sliderTo })` writes the standard 28 second story from your machine, in numbered beats with the editorial captions:
 
 1. One sentence is the whole brief (the prompt bar types itself).
-2. Claude builds the machine (parts fly in by assembly order while the counter climbs: "84 of 3,597 parts").
+2. The agent builds the machine (parts fly in by assembly order while the counter climbs: "84 of 3,597 parts").
 3. It runs (a cursor drags the slider; the hero number climbs from the solver).
 4. Cut it open (section caps, labels with live values).
 5. Take it apart (explode).
@@ -149,6 +152,18 @@ node scripts/record.mjs <name>.html out/<name>-portrait.mp4 --w 1080 --h 1350
 ```
 
 The page runs in film mode (`?film=1`): its clock only moves when the recorder steps it, so every frame is complete and the film is identical every take. The recorder guards every screenshot against the magenta frames a stalled headless GPU can return, and scans the finished film; it exits non zero if any frame is pink. Music from FreePD is CC0; credit the track anyway.
+
+### Environment: check before you promise a film
+
+The HTML page needs only a browser. Screenshots, the critic rounds and the film need Node 18+, Playwright with Chromium, and ffmpeg (on Windows they install with `winget install OpenJS.NodeJS.LTS Gyan.FFmpeg`, then `npm i -D playwright && npx playwright install chromium`). Probe them up front, in this skill's own directory:
+
+```sh
+node --version && npx playwright --version && ffmpeg -version
+```
+
+- All present: run the full loop including the critic rounds and the film.
+- Anything missing: still build the page, render what you can, and hand over the exact missing installs with the ready to run film command. Never describe a film you did not record, and never fake stills with a screenshot you did not take.
+- Offline or sandboxed network: the page pulls three.js 0.170 from jsDelivr and two fonts from Google Fonts on first open, so it needs network once. Say so instead of shipping a page you could not render.
 
 ## Writing on screen
 

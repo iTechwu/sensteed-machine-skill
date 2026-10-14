@@ -18,7 +18,7 @@
 //   --gain -14      music level in LUFS (integrated), default -18 (a soft bed)
 //   --root DIR      folder to serve (default: the folder above the page, so ../kit resolves)
 import { spawn, spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, resolve, relative, basename, join } from 'node:path'
 import { homedir } from 'node:os'
 import { serve } from './lib/serve.mjs'
@@ -112,7 +112,7 @@ if (music) {
   const r = spawnSync(FFMPEG, ['-y', '-loglevel', 'error', '-i', silent, '-i', src, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-af', af, '-c:a', 'aac', '-b:a', '192k', '-t', String(len), '-movflags', '+faststart', OUT], { stdio: 'inherit' })
   if (r.status !== 0) process.exit(5)
 } else spawnSync(FFMPEG, ['-y', '-loglevel', 'error', '-i', silent, '-c', 'copy', '-movflags', '+faststart', OUT], { stdio: 'inherit' })
-spawnSync('rm', ['-f', silent])
+rmSync(silent, { force: true })
 console.log('done', OUT, `${((Date.now() - t0) / 1000).toFixed(0)} s`)
 // no pink frames, ever
 const bad = await scanFile(OUT)
